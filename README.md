@@ -6,6 +6,7 @@ A small cat that helps you enjoy your side channel attack journey!
 
 - Read Datasets: We provide a simple method to read some exist datasets(it would be better if there have the same structure!
 - Cal Rank: try to give the key and result nparray
+- Simple Attack: CPA, Correlation.
 
 example:
 
@@ -26,4 +27,4 @@ To install mlscat, just follow one steps:
 ## Benefits
 
 - Reduce Workload.
-- Reduce Errors.
+- Increase hair volume.

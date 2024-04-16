@@ -30,3 +30,25 @@ def get_mid(p, k, mask, mask_scheme):
     # TODO: Supporting custom mask scheme
     else:
         pass
+
+
+def fit_cnn(data):
+    '''
+    `fit_cnn`
+
+    ## Parameters
+    `data`: ndarray which saved the traces
+
+    ## return 
+    array which fit cnn inputs
+    '''
+    return np.expand_dims(data, 1)
+
+def get_targets(plaintexts):
+    targets = np.zeros(shape=(plaintexts.shape[0], 256))
+    for num, plaintext in enumerate(plaintexts):
+        tmp_targets = np.zeros(shape=256)
+        for key in range(256):
+            tmp_targets[key] = AES_Sbox[key ^ plaintext]
+        targets[num] = tmp_targets
+    return targets
