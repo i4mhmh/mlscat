@@ -13,7 +13,6 @@ setup(
     packages=find_packages(),
     install_requires=[
         'numpy',
-        'pandas',
     ],
     author="i4mhmh",
     author_email='i4mhmh@outlook.com',
