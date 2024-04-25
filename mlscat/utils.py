@@ -47,7 +47,7 @@ def fit_cnn(data):
     ## return 
     array which fit cnn inputs
     '''
-    return np.expand_dims(data, 1)
+    return np.expand_dims(data, data.ndim)
 
 def get_targets(plaintexts):
     targets = np.zeros(shape=(plaintexts.shape[0], 256))
@@ -56,7 +56,7 @@ def get_targets(plaintexts):
         for key in range(256):
             tmp_targets[key] = AES_Sbox[key ^ plaintext]
         targets[num] = tmp_targets
-    return targets
+    return targets.astype(np.int64)
 
 
 # Code is ported from https://github.com/fastai/fastai

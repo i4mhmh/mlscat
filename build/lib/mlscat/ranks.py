@@ -18,11 +18,11 @@ def rank(predictions, targets, key:int, times:int, num_trace:int, interval:int, 
     assert type(times) == type(num_trace) == type(interval) == type(verbose) == type(key) == int
     
     predictions = np.log(predictions + 1e-40)
-    rank_array = np.zeros(shape=(times, num_trace/interval))
+    rank_array = np.zeros(shape=(times, int(num_trace/interval)))
     for i in range(times):
-        tmp_rank = np.zeros(num_trace/interval)
+        tmp_rank = np.zeros(int(num_trace/interval))
         pred = np.zeros(256)
-        idx = np.random.randint(predictions[0], size=num_trace)
+        idx = np.random.randint(predictions.shape[0], size=num_trace)
         for random_index, trace_index in enumerate(idx):
             for key_value in range(256):
                 # ergodic every keys prob
@@ -30,6 +30,6 @@ def rank(predictions, targets, key:int, times:int, num_trace:int, interval:int, 
             
             if random_index % interval == 0:
                 ranked = np.argsort(pred)[::-1]
-                tmp_rank[i/interval] = list(ranked).index(key)
+                tmp_rank[int(i/interval)] = list(ranked).index(key)
         rank_array[i] = tmp_rank
     return np.mean(rank_array, axis=0)
