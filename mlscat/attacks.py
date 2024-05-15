@@ -58,3 +58,31 @@ def pearson(x:np.array, y:np.array):
     y = y/np.linalg.norm(y,axis=0)
     m = np.dot(x.T,y)
     return abs(m)
+
+
+def rank(predictions, targets, key:int, num_trace:int, interval:int):
+    '''
+    ### key rank
+    `A function to calc right key rank`
+    
+    Args:
+    `predictions`: key prediction array.
+    `targets`    : range every keys prediction.
+    `key`        : key value(for byte).
+    `num_trace`  : traces number for prediction.
+    `interval`   : rank interval.
+    
+    Returns:
+        key rank ndarray.
+    '''
+    rank_time = np.zeros(int(num_trace/interval))
+    pred = np.zeros(256)
+    idx = np.random.randint(predictions.shape[0], size=num_trace)
+    for i, p in enumerate(idx):
+        for k in range(predictions.shape[1]): #256
+            pred[k] += predictions[p, targets[p, k]]
+        
+        if i % interval == 0:
+            ranked = np.argsort(pred)[::-1]
+            rank_time[int(i/interval)] = list(ranked).index(key)
+    return rank_time
