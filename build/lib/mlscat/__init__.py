@@ -1,7 +1,4 @@
-from .api import get_sbox
-from .ranks import rank
-from .attacks import cpa, pcc, pearson
-from .security import desynchronization
+from mlscat import data, attacks, leakage, security, utils
 
-__name__ = "dlscat"
-__version__ = '0.0.6'
+__name__ = "mlscat"
+__version__ = '0.0.9'

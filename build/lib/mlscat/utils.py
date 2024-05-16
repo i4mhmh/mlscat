@@ -39,22 +39,32 @@ def get_mid(p, k, mask, mask_scheme):
 
 def fit_cnn(data):
     '''
-    `fit_cnn`
+    ### fit_cnn
 
-    ## Parameters
-    `data`: ndarray which saved the traces
+    Args:
+    `data`: ndarray which saved the traces.
 
-    ## return 
+    Returns:
     array which fit cnn inputs
     '''
     return np.expand_dims(data, data.ndim)
 
-def get_targets(plaintexts):
+def get_targets(plaintexts, mask=-1) -> np.ndarray:
+    '''
+    ### get targets
+    
+    Args:
+    `plaintexts`: plaintext array, shape = (n, 1).
+    `mask`: white box if mask != -1 (except there no mask measure).
+    
+    Returns:
+    targets array.
+    '''
     targets = np.zeros(shape=(plaintexts.shape[0], 256))
     for num, plaintext in enumerate(plaintexts):
         tmp_targets = np.zeros(shape=256)
         for key in range(256):
-            tmp_targets[key] = AES_Sbox[key ^ plaintext]
+            tmp_targets[key] = AES_Sbox[key ^ plaintext] if mask == -1 else AES_Sbox[key ^ plaintext] ^ mask[num]
         targets[num] = tmp_targets
     return targets.astype(np.int64)
 
