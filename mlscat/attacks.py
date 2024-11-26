@@ -3,14 +3,14 @@ from tqdm import tqdm
 from .utils import get_mid
 
 
-def cpa(bytes_num, plaintexts, traces, mask_scheme=None, mask=-1)->np.ndarray:
+def cpa(byte_idx, plaintexts, traces, mask_scheme=None, mask=-1)->np.ndarray:
     '''
     CPA 
     
     `A function to implement correlation power analysis.`
     
     Args:
-        `bytes_num`: input the number of the key bytes you want to attack.
+        `byte_idx`: input the index of the key bytes you want to attack.
         `plaintexts`: input the plaintext array type is numpy arrary.
         `traces`: traces array just like plaintexts.
         `mask_scheme`: please input your mask scheme, TODO: this arg will be used in next version :)
@@ -26,16 +26,14 @@ def cpa(bytes_num, plaintexts, traces, mask_scheme=None, mask=-1)->np.ndarray:
         
     > It is just a example, you need replace the plaintexts and traces to real data.
     '''
-    guess_keys = np.zeros(shape=(bytes_num))
     traces_num = traces.shape[0]
-    for byte in range(bytes_num):
-        data = []
-        for k in tqdm(range(256), desc="[+] byte: " + str(byte)):
-            targets = np.zeros(shape=(traces_num))
-            for index in range(traces_num):
-                targets[index] = get_mid(plaintexts[index][byte], k, mask, mask_scheme)
-            data.append(max(pcc(targets, traces)))
-        guess_keys[byte] = np.argmax(data)
+    data = []
+    for k in tqdm(range(256), desc="[+] byte: " + str(byte_idx)):
+        targets = np.zeros(shape=(traces_num))
+        for index in range(traces_num):
+            targets[index] = get_mid(plaintexts[index][byte_idx], k, mask, mask_scheme)
+        data.append(max(pcc(targets, traces)))
+    guess_keys = np.argmax(data)
     return guess_keys
 
 def pcc(targets:np.array, traces:np.array):
@@ -68,6 +66,8 @@ def prepare_data(trace_set, labels_set):
     for count, label in enumerate(labels_set):
         d[label].append(trace_set[count])
     return d
+
+
 
 # link: https://ileanabuhan.github.io/general/2021/05/07/SNR-tutorial.html
 def snr(trace_set, labels_set):
