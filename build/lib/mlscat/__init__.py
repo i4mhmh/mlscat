@@ -1,4 +1,4 @@
-from mlscat import data, attacks, leakage, security, utils
+from mlscat import data, attacks, leakage, security, utils, metrics
 
 __name__ = "mlscat"
-__version__ = '0.0.9'
+__version__ = '0.1.1'

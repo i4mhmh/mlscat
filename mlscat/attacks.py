@@ -1,6 +1,5 @@
 import numpy as np
 from tqdm import tqdm
-from typing import Union
 from .utils import get_mid
 
 
@@ -59,30 +58,35 @@ def pearson(x:np.array, y:np.array):
     m = np.dot(x.T,y)
     return abs(m)
 
+# signal-noise ratio
+def prepare_data(trace_set, labels_set):
+    labels=np.unique(labels_set)
+    #initialize the dictionary
+    d={}
+    for i in labels:
+         d[i]=[]
+    for count, label in enumerate(labels_set):
+        d[label].append(trace_set[count])
+    return d
 
-def rank(predictions, targets, key:int, num_trace:int, interval:int):
-    '''
-    ### key rank
-    `A function to calc right key rank`
+# link: https://ileanabuhan.github.io/general/2021/05/07/SNR-tutorial.html
+def snr(trace_set, labels_set):
+    mean_trace={}
+    signal_trace=[]
+    noise_trace=[]
+    labels=np.unique(labels_set) 
     
-    Args:
-    `predictions`: key prediction array.
-    `targets`    : range every keys prediction.
-    `key`        : key value(for byte).
-    `num_trace`  : traces number for prediction.
-    `interval`   : rank interval.
+    grouped_traces=prepare_data(trace_set, labels_set) 
     
-    Returns:
-        key rank ndarray.
-    '''
-    rank_time = np.zeros(int(num_trace/interval))
-    pred = np.zeros(256)
-    idx = np.random.randint(predictions.shape[0], size=num_trace)
-    for i, p in enumerate(idx):
-        for k in range(predictions.shape[1]): #256
-            pred[k] += predictions[p, targets[p, k]]
-        
-        if i % interval == 0:
-            ranked = np.argsort(pred)[::-1]
-            rank_time[int(i/interval)] = list(ranked).index(key)
-    return rank_time
+    for i in labels:
+        mean_trace[i]=np.mean(grouped_traces[i], axis=0)
+        signal_trace.append(mean_trace[i]) 
+    
+    for i in labels:
+        for trace in grouped_traces[i]:
+            noise_trace.append(trace-mean_trace[i])
+    var_noise=np.var(noise_trace, axis=0)
+    var_signal=np.var(signal_trace, axis=0)
+    snr_trace=var_signal/var_noise  
+    return snr_trace   
+
