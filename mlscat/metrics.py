@@ -60,6 +60,7 @@ def mutual_information(predictions, y):
     Returns:
     MI
     '''
+    
     pass
 
 def perceived_information():

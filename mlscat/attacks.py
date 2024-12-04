@@ -1,7 +1,47 @@
 import numpy as np
 from tqdm import tqdm
-from .utils import get_mid
+from .utils import get_mid, AES_Sbox
+from .leakage import *
 
+def dpa(traces, plaintexts, threshold, target_byte, target_point, leakage_function):
+    """
+    DPA
+
+    `This function is just for AES-128, if attack AES-256 or others, plz change it.`
+
+    Args:
+        `traces`: an array of power consumption measurements.
+        `plaintexts`: an array of plaintexts.
+        `threshold`: an integer threshold value.
+        `target_byte`: the target byte to attack.
+        `target_point`: the target point in the traces to analyze.
+        `leakage_function`: the leakage function to use (either 'hw' for Hamming weight or another function).
+
+    Returns:
+        `candidate`:after calculation get the maximum value.
+        `mean_diffs`:after calculation get the mean_diffs.
+    
+    Case:
+    >>> ### trace.shape = (2000, 15000), plaintext.shape = (2000, 16)
+    >>> dpa(traces, plaintexts, threshold=4, target_byte=0, target_point=810, leakage_function='hw')
+    """
+    candidate_key = []
+    maximum = 0
+    mean_diffs = np.zeros(256)
+    for i in tqdm(range(256)):
+        traces_group1 = []
+        traces_group2 = []
+        for num in range(len(traces)):
+            mid_val = hw(AES_Sbox[plaintexts[num][target_byte] ^ i]) if leakage_function.lower() == 'hw' else AES_Sbox[plaintexts[num][target_byte] ^ i]
+            if mid_val < threshold:
+                traces_group1.append(traces[num][target_point])
+            else:
+                traces_group2.append(traces[num][target_point])
+        mean_diffs[i] = abs(np.mean(traces_group1) - np.mean(traces_group2))
+        if mean_diffs[i] > maximum:
+            maximum = mean_diffs[i]
+            candidate_key = i
+    return candidate_key, mean_diffs
 
 def cpa(byte_idx, plaintexts, traces, mask_scheme=None, mask=-1)->np.ndarray:
     '''
